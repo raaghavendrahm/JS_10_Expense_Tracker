@@ -1,7 +1,7 @@
 // Grabbing necessary DOM elments:
 const balance = document.getElementById('balance');
-const moneyPlus = document.getElementById('moneyPlus');
-const moneyMinus = document.getElementById('moneyMinus');
+const moneyPlus = document.getElementById('money-plus');
+const moneyMinus = document.getElementById('money-minus');
 const list = document.getElementById('list');
 const form = document.getElementById('form');
 const text = document.getElementById('text');
@@ -45,6 +45,36 @@ const addTransactionDOM = (transaction) => {
   list.appendChild(item);
 };
 
+// Update the balance, income and expense
+const updateValues = () => {
+  // Create an array of 'amounts' using map:
+  const amounts = transactions.map((transaction) => transaction.amount);
+  // console.log(amounts); // logs the array containing all the transaction values
+
+  // Now, total up the amounts using reduce:
+  const total = amounts.reduce((acc, item) => (acc += item), 0).toFixed(2);
+  // console.log(total); // logs the sum of amounts
+
+  // Get the income using filter and sum of it using reduce:
+  const income = amounts
+    .filter((item) => item > 0) // get only positive values
+    .reduce((acc, item) => (acc += item), 0) // sum them up
+    .toFixed(2);
+  // console.log(income); // logs the income value
+
+  // Get the expense using filter and sum of it using reduce:
+  const expense =
+    amounts.filter((item) => item < 0).reduce((acc, item) => (acc += item), 0) *
+    -1;
+
+  // console.log(expense); // logs the expense value
+
+  // Now, all the values are to be inserted to the DOM relevantly:
+  balance.innerText = `Rs ${total}`;
+  moneyPlus.innerText = `Rs ${income}`;
+  moneyMinus.innerText = `Rs ${expense}`;
+};
+
 // Init app
 const init = () => {
   // Init executes right away.
@@ -54,6 +84,9 @@ const init = () => {
 
   // Run addTransactionDOM function for all the transactions:
   transactions.forEach(addTransactionDOM);
+
+  // Update Values:
+  updateValues();
 };
 
 init();
