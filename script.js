@@ -8,15 +8,25 @@ const text = document.getElementById('text');
 const amount = document.getElementById('amount');
 
 // Transactions will be stored to LS later. For now, it is stored in 'dummyTransactions' array:
-const dummyTransactions = [
+/* const dummyTransactions = [
   { id: 1, text: 'Flower', amount: -20 },
   { id: 2, text: 'Salary', amount: 300 },
   { id: 3, text: 'Book', amount: -10 },
   { id: 4, text: 'Camera', amount: 150 },
-];
+]; */
 
-// Let's create 'transactions' which is a global state for transactions, set to dummyTransactions now, later linked to LS:
+// Getting transactions from local storage:
+const localStorageTransactions = JSON.parse(
+  localStorage.getItem('transactions')
+);
+
+/* // Let's create 'transactions' which is a global state for transactions, set to dummyTransactions now, later linked to LS:
 let transactions = dummyTransactions;
+ */
+
+// Create 'transactions':
+let transactions =
+  localStorage.getItem('transactions') !== null ? localStorageTransactions : [];
 
 // FUNCTIONS
 
@@ -43,6 +53,9 @@ const addTransaction = (e) => {
 
     // Update values:
     updateValues();
+
+    // Update local storage:
+    updateLocalStorage();
 
     // Clear Inputs:
     text.value = '';
@@ -119,8 +132,16 @@ const removeTransaction = (id) => {
   // For every transaction, its id is checked with the id passed in. If not matching, will be retained in transactions:
   transactions = transactions.filter((transaction) => transaction.id !== id);
 
+  // Update local storage:
+  updateLocalStorage();
+
   //  Re-initialize to update data on the page:
   init();
+};
+
+// Update Local Storage transaction
+const updateLocalStorage = () => {
+  localStorage.setItem('transactions', JSON.stringify(transactions));
 };
 
 // Init app
