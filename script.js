@@ -18,9 +18,46 @@ const dummyTransactions = [
 // Let's create 'transactions' which is a global state for transactions, set to dummyTransactions now, later linked to LS:
 let transactions = dummyTransactions;
 
+// FUNCTIONS
+
+// Add Transaction:
+const addTransaction = (e) => {
+  e.preventDefault();
+
+  // Checking for empty values:
+  if (text.value.trim() === '' || amount.value.trim() === '') {
+    alert('Please add a text and amount');
+  } else {
+    // Create a transaction object to add:
+    const transaction = {
+      id: generateID(), // created below
+      text: text.value,
+      amount: +amount.value, // to convert string to a number
+    };
+
+    // Push newly created transaction to transactions array:
+    transactions.push(transaction);
+
+    // Add the newly created transaction to DOM:
+    addTransactionDOM(transaction);
+
+    // Update values:
+    updateValues();
+
+    // Clear Inputs:
+    text.value = '';
+    amount.value = '';
+  }
+};
+
+// Generate random ID for transcation added:
+const generateID = () => {
+  return Math.floor(Math.random() * 100000000);
+};
+
 // Create a function to display transaction on the DOM under History:
 
-// Add Transactions:
+// Add Transactions DOM:
 const addTransactionDOM = (transaction) => {
   // First, to distinguish b/n income and expense, sign is needed.
 
@@ -37,7 +74,9 @@ const addTransactionDOM = (transaction) => {
   item.innerHTML = `
     ${transaction.text} <span>${sign}${Math.abs(
     transaction.amount
-  )}</span> <button class='delete-btn'>x</button>
+  )}</span> <button class='delete-btn' onClick="removeTransaction(${
+    transaction.id
+  })">x</button>
   `;
   // As transaction amount contains sign alongwith it, Math.abs() is used to convert - to + as sign in explicitely used.
 
@@ -75,6 +114,15 @@ const updateValues = () => {
   moneyMinus.innerText = `Rs ${expense}`;
 };
 
+// Remove transaction by ID:
+const removeTransaction = (id) => {
+  // For every transaction, its id is checked with the id passed in. If not matching, will be retained in transactions:
+  transactions = transactions.filter((transaction) => transaction.id !== id);
+
+  //  Re-initialize to update data on the page:
+  init();
+};
+
 // Init app
 const init = () => {
   // Init executes right away.
@@ -90,3 +138,8 @@ const init = () => {
 };
 
 init();
+
+// EVENT LISTENERS:
+
+// Add transaction
+form.addEventListener('submit', addTransaction);
